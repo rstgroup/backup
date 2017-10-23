@@ -8,6 +8,11 @@ module Backup
       attr_accessor :path
 
       ##
+      # Does path on the remote where backup package files will be stored, should include timestamp?
+      # By default it's true
+      attr_accessor :timestamp_in_path
+
+      ##
       # Number of backups to keep or time until which to keep.
       #
       # If an Integer is given it sets the limit to how many backups to keep in
@@ -33,6 +38,7 @@ module Backup
         @model = model
         @package = model.package
         @storage_id = storage_id.to_s.gsub(/\W/, "_") if storage_id
+        @timestamp_in_path = true
 
         load_defaults!
         instance_eval(&block) if block_given?
@@ -52,8 +58,9 @@ module Backup
       ##
       # Return the remote path for the current or given package.
       def remote_path(pkg = package)
-        path.empty? ? File.join(pkg.trigger, pkg.time) :
-                      File.join(path, pkg.trigger, pkg.time)
+        time_path = timestamp_in_path ? pkg.time : ''
+        path.empty? ? File.join(pkg.trigger, time_path) :
+                      File.join(path, pkg.trigger, time_path)
       end
       alias :remote_path_for :remote_path
 
