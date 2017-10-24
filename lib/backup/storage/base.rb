@@ -10,6 +10,11 @@ module Backup
       attr_accessor :path
 
       ##
+      # Does path on the remote where backup package files will be stored, should include timestamp?
+      # By default it's true
+      attr_accessor :replace_timestamp_with
+
+      ##
       # Number of backups to keep or time until which to keep.
       #
       # If an Integer is given it sets the limit to how many backups to keep in
@@ -54,8 +59,9 @@ module Backup
       ##
       # Return the remote path for the current or given package.
       def remote_path(pkg = package)
-        path.empty? ? File.join(pkg.trigger, pkg.time) :
-                      File.join(path, pkg.trigger, pkg.time)
+        time_path = replace_timestamp_with.nil? ? pkg.time : replace_timestamp_with
+        path.empty? ? File.join(pkg.trigger, time_path) :
+                      File.join(path, pkg.trigger, time_path)
       end
       alias :remote_path_for :remote_path
 
